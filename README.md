@@ -3,8 +3,8 @@
 ## 👥 Equipo de Desarrollo
 
 **Proyecto desarrollado colaborativamente por:**
-- **Developer A** - Arquitectura, Autenticación y Componentes Base
-- **Developer B** - Funcionalidades Principales y UI Avanzada
+- **Dev Nicolas Mueses** - Arquitectura, Autenticación y Componentes Base
+- **Dev Ilian Gonzalez** - Funcionalidades Principales y UI Avanzada
 
 ## 📋 Descripción
 
@@ -38,8 +38,8 @@ Sistema integral de gestión veterinaria desarrollado con React, React Router DO
 
 ## 🛠️ Tecnologías Utilizadas
 
-- React 18.2.0
-- React Router DOM 6.x
+- React 
+- React 
 - Tailwind CSS
 - SweetAlert2
 - Vite
@@ -217,21 +217,3 @@ src/pages/Configuracion.jsx
 src/components/ui/Modal.jsx
 src/components/ui/Navbar.jsx
 ```
-
-## 🔄 Colaboración
-
-**Trabajo conjunto:**
-- Integración de componentes entre desarrolladores
-- Testing colaborativo de funcionalidades
-- Resolución de conflictos de merge
-- Documentación y refinamiento final
-
-## 📊 Estadísticas del Proyecto
-
-- **Total de componentes:** 15+
-- **Páginas implementadas:** 6
-- **Rutas protegidas:** 5
-- **Funcionalidades CRUD:** Completas
-- **Responsive design:** 100%
-- **Persistencia de datos:** localStorage
-- **Validaciones:** Formularios completos
