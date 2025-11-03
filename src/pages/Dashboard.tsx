@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuthStore } from '../store/authStore';
+import { usePacientesStore } from '../store/pacientesStore';
+import { useCitasStore } from '../store/citasStore';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Navbar from '../components/ui/Navbar';
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const pacientes = usePacientesStore((state) => state.pacientes);
+  const citas = useCitasStore((state) => state.citas);
   const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalPacientes: 0,
@@ -17,10 +21,10 @@ const Dashboard = () => {
   const [mostrarTodasActividades, setMostrarTodasActividades] = useState(false);
 
   // Función para formatear fecha relativa
-  const formatearFechaRelativa = (fecha) => {
+  const formatearFechaRelativa = (fecha: string | Date) => {
     const ahora = new Date();
     const fechaActividad = new Date(fecha);
-    const diferencia = ahora - fechaActividad;
+    const diferencia = ahora.getTime() - fechaActividad.getTime();
     
     const minutos = Math.floor(diferencia / (1000 * 60));
     const horas = Math.floor(diferencia / (1000 * 60 * 60));
@@ -48,8 +52,6 @@ const Dashboard = () => {
 
   // Función para generar actividades basadas en datos reales
   const generarActividades = () => {
-    const pacientes = JSON.parse(localStorage.getItem('pacientes')) || [];
-    const citas = JSON.parse(localStorage.getItem('citas')) || [];
     const actividadesGeneradas = [];
 
     // Actividades de pacientes recientes (últimos 7 días)
@@ -132,14 +134,10 @@ const Dashboard = () => {
     }
 
     // Ordenar por fecha más reciente
-    return actividadesGeneradas.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+    return actividadesGeneradas.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
   };
 
   useEffect(() => {
-    // Datos del dashboard
-    const pacientes = JSON.parse(localStorage.getItem('pacientes')) || [];
-    const citas = JSON.parse(localStorage.getItem('citas')) || [];
-    
     const today = new Date().toISOString().split('T')[0];
     const citasHoy = citas.filter(cita => cita.fecha === today).length;
     const citasPendientes = citas.filter(cita => cita.estado === 'pendiente').length;
@@ -152,7 +150,7 @@ const Dashboard = () => {
 
     // Generar actividades recientes
     setActividades(generarActividades());
-  }, []);
+  }, [pacientes, citas]);
 
   return (
     <div className="min-h-screen bg-gray-100">

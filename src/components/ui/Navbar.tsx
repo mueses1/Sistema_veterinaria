@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuthStore } from '../../store/authStore';
 
 interface NavigationItem {
   path: string;
@@ -10,7 +10,8 @@ interface NavigationItem {
 }
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
   const location = useLocation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -150,7 +151,7 @@ const Navbar = () => {
 
             {/* Botón menú móvil */}
             <button
-              onClick={() => setIsMenuOpen(!setIsMenuOpen)}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden p-2 text-white hover:bg-white hover:bg-opacity-10 rounded-lg"
             >
               <span className="text-xl">☰</span>

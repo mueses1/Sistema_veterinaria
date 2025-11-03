@@ -1,5 +1,7 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuthStore } from '../store/authStore';
+import { usePacientesStore } from '../store/pacientesStore';
+import { useCitasStore } from '../store/citasStore';
 import Navbar from '../components/ui/Navbar';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -27,7 +29,10 @@ interface FormErrors {
 }
 
 const Perfil = () => {
-  const { user, login } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const login = useAuthStore((state) => state.login);
+  const pacientes = usePacientesStore((state) => state.pacientes);
+  const citas = useCitasStore((state) => state.citas);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>({
     nombre: user?.nombre || '',
@@ -174,13 +179,13 @@ const Perfil = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">Pacientes atendidos</span>
                     <span className="font-bold text-blue-600">
-                      {JSON.parse(localStorage.getItem('pacientes') || '[]').length}
+                      {pacientes.length}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">Citas programadas</span>
                     <span className="font-bold text-green-600">
-                      {JSON.parse(localStorage.getItem('citas') || '[]').length}
+                      {citas.length}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">

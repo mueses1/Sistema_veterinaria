@@ -1,10 +1,12 @@
-import { useState, useEffect, FormEvent, ChangeEvent } from 'react';
+import { useState, FormEvent, ChangeEvent } from 'react';
 import Navbar from '../components/ui/Navbar';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Modal from '../components/ui/Modal';
-import { Cita, Paciente } from '../types';
+import { Cita, Paciente } from '../types/Index.ts';
+import { useCitasStore } from '../store/citasStore';
+import { usePacientesStore } from '../store/pacientesStore';
 
 interface FormData {
   pacienteId: string;
@@ -15,14 +17,11 @@ interface FormData {
 }
 
 const Citas = () => {
-  const [citas, setCitas] = useState<Cita[]>(() => {
-    const stored = localStorage.getItem('citas');
-    return stored ? JSON.parse(stored) : [];
-  });
-  const [pacientes] = useState<Paciente[]>(() => {
-    const stored = localStorage.getItem('pacientes');
-    return stored ? JSON.parse(stored) : [];
-  });
+  const citas = useCitasStore((state) => state.citas);
+  const addCita = useCitasStore((state) => state.addCita);
+  const updateEstadoCita = useCitasStore((state) => state.updateEstadoCita);
+  const deleteCita = useCitasStore((state) => state.deleteCita);
+  const pacientes = usePacientesStore((state) => state.pacientes);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>({
     pacienteId: '',
@@ -31,10 +30,6 @@ const Citas = () => {
     motivo: '',
     estado: 'pendiente'
   });
-
-  useEffect(() => {
-    localStorage.setItem('citas', JSON.stringify(citas));
-  }, [citas]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,7 +45,7 @@ const Citas = () => {
       fechaCreacion: new Date().toISOString()
     };
 
-    setCitas([...citas, nuevaCita]);
+    addCita(nuevaCita);
     setFormData({
       pacienteId: '',
       fecha: '',
@@ -62,13 +57,7 @@ const Citas = () => {
   };
 
   const cambiarEstadoCita = (id: string, nuevoEstado: Cita['estado']) => {
-    setCitas(citas.map((cita: Cita) => 
-      cita.id === id ? { ...cita, estado: nuevoEstado } : cita
-    ));
-  };
-
-  const eliminarCita = (id: string) => {
-    setCitas(citas.filter((cita: Cita) => cita.id !== id));
+    updateEstadoCita(id, nuevoEstado);
   };
 
   const getEstadoColor = (estado: Cita['estado']) => {
@@ -201,7 +190,7 @@ const Citas = () => {
                       <Button
                         variant="danger"
                         size="sm"
-                        onClick={() => eliminarCita(cita.id)}
+                        onClick={() => deleteCita(cita.id)}
                       >
                         Eliminar
                       </Button>

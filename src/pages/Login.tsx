@@ -1,6 +1,6 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuthStore } from '../store/authStore';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
@@ -21,7 +21,7 @@ const Login = () => {
         password: ''
     });
     const [errors, setErrors] = useState<FormErrors>({});
-    const { login } = useAuth();
+    const login = useAuthStore((state) => state.login);
     const navigate = useNavigate();
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {

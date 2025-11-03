@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -10,8 +9,7 @@ import Configuracion from './pages/Configuracion';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
         <div className="min-h-screen bg-gray-100">
           <Routes>
             {/* Ruta pública */}
@@ -53,7 +51,6 @@ function App() {
           </Routes>
         </div>
       </Router>
-    </AuthProvider>
   );
 }
 

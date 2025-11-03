@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuthStore } from '../store/authStore';
 import Navbar from '../components/ui/Navbar';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -7,7 +7,7 @@ import Input from '../components/ui/Input';
 import Swal from 'sweetalert2';
 
 const Configuracion = () => {
-  const { user } = useAuth();
+  const user = useAuthStore((state) => state.user);
   
   // Estados para diferentes secciones de configuraci贸n
   const [clinicaConfig, setClinicaConfig] = useState({

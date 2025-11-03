@@ -1,18 +1,19 @@
 // Importacion de los Hooks al formulario
 import { useState, useEffect, FormEvent, ChangeEvent } from 'react'
 import Error from './Error'
-import { Paciente } from '../types'
+import { Paciente } from '../types/Index.ts'
+import { usePacientesStore } from '../store/pacientesStore'
 
 interface FormularioProps {
-    pacientes: Paciente[];
-    setPacientes: (pacientes: Paciente[]) => void;
     paciente: Partial<Paciente>;
     setPaciente: (paciente: Partial<Paciente>) => void;
     onClose?: () => void;
 }
 
 // Creamos nuestro functional component
-const Formulario = ({ pacientes, setPacientes, paciente, setPaciente, onClose }: FormularioProps) => {
+const Formulario = ({ paciente, setPaciente, onClose }: FormularioProps) => {
+    const addPaciente = usePacientesStore((state) => state.addPaciente);
+    const updatePaciente = usePacientesStore((state) => state.updatePaciente);
     /**
      * Como buena practica el State debe ser declarado en la parte
      * superior de nuestra funcion antes del return 
@@ -73,20 +74,14 @@ const Formulario = ({ pacientes, setPacientes, paciente, setPaciente, onClose }:
         if (paciente.id) {
             // Editando el resgistro
             objetoPaciente.id = paciente.id
-            console.log(objetoPaciente)
-            console.log(paciente)
-
-            // Pacientes Actualizados
-            const pacientesActualizados = pacientes.map(pacienteState => pacienteState.id === paciente.id ? objetoPaciente : pacienteState)
-
-            setPacientes(pacientesActualizados)
+            updatePaciente(paciente.id, objetoPaciente as Paciente)
             setPaciente({})
 
         } else {
             // Generacion de Id
             objetoPaciente.id = generarId();
             // Nuevo registro
-            setPacientes([...pacientes, objetoPaciente])
+            addPaciente(objetoPaciente as Paciente)
         }
 
         //Reinicio del formulario

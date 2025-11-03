@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEvent } from 'react';
+import { useState, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Navbar from '../components/ui/Navbar';
@@ -8,24 +8,18 @@ import Input from '../components/ui/Input';
 import Modal from '../components/ui/Modal';
 import Formulario from '../components/Formulario';
 import { Paciente } from '../types';
+import { usePacientesStore } from '../store/pacientesStore';
 
 const Pacientes = () => {
   const navigate = useNavigate();
-  const [pacientes, setPacientes] = useState<Paciente[]>(() => {
-    const stored = localStorage.getItem('pacientes');
-    return stored ? JSON.parse(stored) : [];
-  });
+  const pacientes = usePacientesStore((state) => state.pacientes);
+  const deletePaciente = usePacientesStore((state) => state.deletePaciente);
   const [paciente, setPaciente] = useState<Partial<Paciente>>({});
   const [showModal, setShowModal] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
 
-  useEffect(() => {
-    localStorage.setItem('pacientes', JSON.stringify(pacientes));
-  }, [pacientes]);
-
   const eliminarPaciente = (id: string) => {
-    const pacientesActualizados = pacientes.filter(paciente => paciente.id !== id);
-    setPacientes(pacientesActualizados);
+    deletePaciente(id);
   };
 
   const confirmarEliminarPaciente = (id: string, nombre: string) => {
@@ -209,8 +203,6 @@ const Pacientes = () => {
           title={Object.keys(paciente).length > 0 ? 'Editar Paciente' : 'Nuevo Paciente'}
         >
           <Formulario
-            pacientes={pacientes}
-            setPacientes={setPacientes}
             paciente={paciente}
             setPaciente={setPaciente}
             onClose={() => setShowModal(false)}

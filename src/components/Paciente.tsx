@@ -1,10 +1,10 @@
 import Swal from 'sweetalert2';
-import { Paciente as PacienteType } from '../types';
+import { Paciente as PacienteType } from '../types/Index.ts';
 
 interface PacienteProps {
-  paciente: PacienteType;
-  setPaciente: (paciente: Partial<PacienteType>) => void;
-  eliminarPaciente: (id: string) => void;
+    paciente: PacienteType;
+    setPaciente: (paciente: Partial<PacienteType>) => void;
+    eliminarPaciente: (id: string) => void;
 }
 
 const Paciente = ({ paciente, setPaciente, eliminarPaciente }: PacienteProps) => {
