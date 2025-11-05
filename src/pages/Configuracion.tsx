@@ -57,12 +57,12 @@ const Configuracion = () => {
     if (savedSeguridad) setSeguridadConfig(JSON.parse(savedSeguridad));
   }, []);
 
-  // Guardar configuraci贸n
+  // Guardar configuración
   const guardarConfiguracion = (tipo, config) => {
     localStorage.setItem(`${tipo}Config`, JSON.stringify(config));
     
     Swal.fire({
-      title: 'Configuraci贸n guardada',
+      title: 'Configuración guardada',
       text: 'Los cambios se han aplicado correctamente',
       icon: 'success',
       timer: 2000,
@@ -70,7 +70,7 @@ const Configuracion = () => {
     });
   };
 
-  // Exportar configuraci贸n
+  // Exportar configuración
   const exportarConfiguracion = () => {
     const configuracionCompleta = {
       clinica: clinicaConfig,
@@ -93,11 +93,11 @@ const Configuracion = () => {
     URL.revokeObjectURL(url);
   };
 
-  // Resetear configuraci贸n
+  // Resetear configuración
   const resetearConfiguracion = () => {
     Swal.fire({
-      title: '驴Resetear configuraci贸n?',
-      text: 'Esto restaurar谩 todas las configuraciones a sus valores por defecto',
+      title: 'Resetear configuración?',
+      text: 'Esto restaurara todas las configuraciones a sus valores por defecto',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
@@ -147,7 +147,7 @@ const Configuracion = () => {
           logActividades: true
         });
 
-        Swal.fire('Configuraci贸n reseteada', 'Todas las configuraciones han sido restauradas', 'success');
+        Swal.fire('Configuración reseteada', 'Todas las configuraciones han sido restauradas', 'success');
       }
     });
   };
@@ -161,9 +161,9 @@ const Configuracion = () => {
           {/* Header */}
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-800">Configuraci贸n</h1>
+              <h1 className="text-3xl font-bold text-gray-800">Configuración</h1>
               <p className="text-gray-600 mt-2">
-                Personaliza el sistema seg煤n tus necesidades
+                Personaliza el sistema según tus necesidades
               </p>
             </div>
             <div className="flex space-x-3">
@@ -171,33 +171,33 @@ const Configuracion = () => {
                 variant="outline"
                 onClick={exportarConfiguracion}
               >
-                馃摜 Exportar
+                Exportar
               </Button>
               <Button
                 variant="danger"
                 onClick={resetearConfiguracion}
               >
-                馃攧 Resetear
+                Resetear
               </Button>
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Configuraci贸n de la Cl铆nica */}
-            <Card title="馃彞 Informaci贸n de la Cl铆nica">
+            {/* Configuraci贸n de la Clinica */}
+            <Card title="Informaci贸n de la Clínica">
               <div className="space-y-4">
                 <Input
-                  label="Nombre de la Cl铆nica"
+                  label="Nombre de la Clinica"
                   value={clinicaConfig.nombre}
                   onChange={(e) => setClinicaConfig({...clinicaConfig, nombre: e.target.value})}
                 />
                 <Input
-                  label="Direcci贸n"
+                  label="Dirección"
                   value={clinicaConfig.direccion}
                   onChange={(e) => setClinicaConfig({...clinicaConfig, direccion: e.target.value})}
                 />
                 <Input
-                  label="Tel茅fono"
+                  label="Teléfono"
                   value={clinicaConfig.telefono}
                   onChange={(e) => setClinicaConfig({...clinicaConfig, telefono: e.target.value})}
                 />
@@ -225,7 +225,7 @@ const Configuracion = () => {
 
                 <div>
                   <label className="block text-gray-700 uppercase font-bold mb-2">
-                    D铆as Laborales
+                    Días Laborales
                   </label>
                   <div className="grid grid-cols-2 gap-2">
                     {['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'].map(dia => (
@@ -259,20 +259,20 @@ const Configuracion = () => {
                   className="w-full"
                   onClick={() => guardarConfiguracion('clinica', clinicaConfig)}
                 >
-                  馃捑 Guardar Informaci贸n de Cl铆nica
+                  Guardar Información de Clínica
                 </Button>
               </div>
             </Card>
 
-            {/* Configuraci贸n de Notificaciones */}
-            <Card title="馃敂 Notificaciones">
+            {/* Configuración de Notificaciones */}
+            <Card title="Notificaciones">
               <div className="space-y-4">
                 {[
-                  { key: 'emailNuevoPaciente', label: 'Email al registrar nuevo paciente', icon: '馃摟' },
-                  { key: 'emailNuevaCita', label: 'Email al programar nueva cita', icon: '馃搮' },
-                  { key: 'recordatoriosCitas', label: 'Recordatorios de citas', icon: '鈴�' },
-                  { key: 'reportesDiarios', label: 'Reportes diarios autom谩ticos', icon: '馃搳' },
-                  { key: 'alertasVacunacion', label: 'Alertas de vacunaci贸n', icon: '馃拤' }
+                  { key: 'emailNuevoPaciente', label: 'Email al registrar nuevo paciente', icon: '📥' },
+                  { key: 'emailNuevaCita', label: 'Email al programar nueva cita', icon: '📨' },
+                  { key: 'recordatoriosCitas', label: 'Recordatorios de citas', icon: '📝' },
+                  { key: 'reportesDiarios', label: 'Reportes diarios automaticos', icon: '⏱️' },
+                  { key: 'alertasVacunacion', label: 'Alertas de vacunación', icon: '💉' }
                 ].map(item => (
                   <label key={item.key} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div className="flex items-center space-x-3">
@@ -296,13 +296,13 @@ const Configuracion = () => {
                   className="w-full"
                   onClick={() => guardarConfiguracion('notificaciones', notificacionesConfig)}
                 >
-                  馃捑 Guardar Notificaciones
+                  Guardar Notificaciones
                 </Button>
               </div>
             </Card>
 
-            {/* Configuraci贸n del Sistema */}
-            <Card title="鈿欙笍 Sistema">
+            {/* Configuración del Sistema */}
+            <Card title="Sistema">
               <div className="space-y-4">
                 <div>
                   <label className="block text-gray-700 uppercase font-bold mb-2">Tema</label>
@@ -311,9 +311,9 @@ const Configuracion = () => {
                     onChange={(e) => setSistemaConfig({...sistemaConfig, tema: e.target.value})}
                     className="border-2 w-full p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="claro">馃尀 Claro</option>
-                    <option value="oscuro">馃寵 Oscuro</option>
-                    <option value="auto">馃攧 Autom谩tico</option>
+                    <option value="claro">Claro</option>
+                    <option value="oscuro">Oscuro</option>
+                    <option value="auto">Automatico</option>
                   </select>
                 </div>
 
@@ -324,9 +324,9 @@ const Configuracion = () => {
                     onChange={(e) => setSistemaConfig({...sistemaConfig, idioma: e.target.value})}
                     className="border-2 w-full p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="es">馃嚜馃嚫 Espa帽ol</option>
-                    <option value="en">馃嚭馃嚫 English</option>
-                    <option value="pt">馃嚙馃嚪 Portugu锚s</option>
+                    <option value="es">Español</option>
+                    <option value="en">English</option>
+                    <option value="pt">Portugues</option>
                   </select>
                 </div>
 
@@ -356,8 +356,8 @@ const Configuracion = () => {
                 </div>
 
                 {[
-                  { key: 'autoguardado', label: 'Autoguardado autom谩tico', icon: '馃捑' },
-                  { key: 'backupAutomatico', label: 'Backup autom谩tico diario', icon: '馃攧' }
+                  { key: 'autoguardado', label: 'Autoguardado automatico', icon: '⚙️' },
+                  { key: 'backupAutomatico', label: 'Backup automatico diario', icon: '⏱️' }
                 ].map(item => (
                   <label key={item.key} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div className="flex items-center space-x-3">
@@ -381,17 +381,17 @@ const Configuracion = () => {
                   className="w-full"
                   onClick={() => guardarConfiguracion('sistema', sistemaConfig)}
                 >
-                  馃捑 Guardar Sistema
+                  Guardar Sistema
                 </Button>
               </div>
             </Card>
 
-            {/* Configuraci贸n de Seguridad */}
-            <Card title="馃敀 Seguridad">
+            {/* Configuración de Seguridad */}
+            <Card title="Seguridad">
               <div className="space-y-4">
                 <div>
                   <label className="block text-gray-700 uppercase font-bold mb-2">
-                    Expiraci贸n de Sesi贸n (horas)
+                    Expiración de Sesión (horas)
                   </label>
                   <select
                     value={seguridadConfig.sesionExpira}
@@ -407,9 +407,9 @@ const Configuracion = () => {
                 </div>
 
                 {[
-                  { key: 'requiereCambioPassword', label: 'Requerir cambio de contrase帽a cada 90 d铆as', icon: '馃攽' },
-                  { key: 'autenticacionDosFactor', label: 'Autenticaci贸n de dos factores', icon: '馃洝锔�' },
-                  { key: 'logActividades', label: 'Registrar log de actividades', icon: '馃摑' }
+                  { key: 'requiereCambioPassword', label: 'Requerir cambio de contraseña cada 90 días', icon: '🔑' },
+                  { key: 'autenticacionDosFactor', label: 'Autenticación de dos factores', icon: '🛃' },
+                  { key: 'logActividades', label: 'Registrar log de actividades', icon: '📝' }
                 ].map(item => (
                   <label key={item.key} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div className="flex items-center space-x-3">
@@ -433,21 +433,21 @@ const Configuracion = () => {
                   className="w-full"
                   onClick={() => guardarConfiguracion('seguridad', seguridadConfig)}
                 >
-                  馃捑 Guardar Seguridad
+                  Guardar Seguridad
                 </Button>
               </div>
             </Card>
           </div>
 
-          {/* Informaci贸n del sistema */}
-          <Card title="鈩癸笍 Informaci贸n del Sistema" className="mt-6">
+          {/* Información del sistema */}
+          <Card title="Información del Sistema" className="mt-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center">
-                <h4 className="font-bold text-gray-800">Versi贸n</h4>
+                <h4 className="font-bold text-gray-800">Versión</h4>
                 <p className="text-blue-600">v1.0.0</p>
               </div>
               <div className="text-center">
-                <h4 className="font-bold text-gray-800">脷ltima Actualizaci贸n</h4>
+                <h4 className="font-bold text-gray-800">Última Actualización</h4>
                 <p className="text-green-600">23/10/2025</p>
               </div>
               <div className="text-center">
