@@ -111,12 +111,6 @@ const Login = () => {
                             Iniciar Sesión
                         </Button>
                     </form>
-
-                    <div className="mt-4 text-center text-sm text-gray-600">
-                        <p>Credenciales de prueba:</p>
-                        <p>Email: cualquier@email.com</p>
-                        <p>Contraseña: 123456</p>
-                    </div>
                 </Card>
             </div>
         </div>
