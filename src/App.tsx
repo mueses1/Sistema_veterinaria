@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
@@ -6,51 +7,112 @@ import Pacientes from './pages/Pacientes';
 import Citas from './pages/Citas';
 import Perfil from './pages/Perfil';
 import Configuracion from './pages/Configuracion';
+import Landing from './pages/Landing';
+import Productos from './pages/Productos';
+import CatalogoProductos from './pages/CatalogoProductos';
+import SobreNosotros from './pages/SobreNosotros';
+import Servicios from './pages/Servicios';
+import Contacto from './pages/Contacto';
+import { applyThemeClass, loadStoredTheme } from './utils/theme';
+
+const API_BASE_URL = 'http://localhost:8000/api/v1';
 
 function App() {
+  useEffect(() => {
+    const storedTheme = loadStoredTheme();
+    if (storedTheme) {
+      applyThemeClass(storedTheme);
+      return;
+    }
+
+    const loadInitialTheme = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/settings/`);
+        if (!res.ok) {
+          applyThemeClass('claro');
+          return;
+        }
+        const data = await res.json();
+        const tema = data?.sistema?.tema;
+
+        if (tema === 'oscuro') {
+          applyThemeClass('oscuro');
+        } else {
+          applyThemeClass('claro');
+        }
+      } catch {
+        applyThemeClass('claro');
+      }
+    };
+
+    loadInitialTheme();
+  }, []);
+
   return (
     <Router>
-        <div className="min-h-screen bg-gray-100">
-          <Routes>
-            {/* Ruta pública */}
-            <Route path="/login" element={<Login />} />
-            
-            {/* Rutas protegidas */}
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/pacientes" element={
-              <ProtectedRoute>
-                <Pacientes />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/citas" element={
-              <ProtectedRoute>
-                <Citas />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/perfil" element={
-              <ProtectedRoute>
-                <Perfil />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/configuracion" element={
-              <ProtectedRoute>
-                <Configuracion />
-              </ProtectedRoute>
-            } />
-            
-            {/* Redirección por defecto */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
-        </div>
-      </Router>
+      <Routes>
+        {/* Rutas públicas */}
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/catalogo-productos" element={<CatalogoProductos />} />
+        <Route path="/sobre-nosotros" element={<SobreNosotros />} />
+        <Route path="/servicios" element={<Servicios />} />
+        <Route path="/contacto" element={<Contacto />} />
+        
+        {/* Rutas protegidas */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/pacientes"
+          element={
+            <ProtectedRoute>
+              <Pacientes />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/citas"
+          element={
+            <ProtectedRoute>
+              <Citas />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/productos"
+          element={
+            <ProtectedRoute>
+              <Productos />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/perfil"
+          element={
+            <ProtectedRoute>
+              <Perfil />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/configuracion"
+          element={
+            <ProtectedRoute>
+              <Configuracion />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Redirección por defecto */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Router>
   );
 }
 

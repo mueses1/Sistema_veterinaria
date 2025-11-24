@@ -26,7 +26,7 @@ const Button = ({
     const baseClasses = 'font-bold uppercase rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
 
     const variants: Record<ButtonVariant, string> = {
-        primary: 'bg-blue-500 hover:bg-blue-700 text-white focus:ring-blue-500',
+        primary: 'bg-blue-500 hover:bg-blue-400 text-white focus:ring-blue-500',
         secondary: 'bg-gray-500 hover:bg-gray-700 text-white focus:ring-gray-500',
         danger: 'bg-red-500 hover:bg-red-700 text-white focus:ring-red-500',
         success: 'bg-green-500 hover:bg-green-700 text-white focus:ring-green-500',

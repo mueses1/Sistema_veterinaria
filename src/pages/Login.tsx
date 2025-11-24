@@ -16,11 +16,15 @@ interface FormErrors {
 }
 
 const Login = () => {
+
     const [formData, setFormData] = useState<FormData>({
         email: '',
         password: ''
     });
     const [errors, setErrors] = useState<FormErrors>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [apiError, setApiError] = useState<string | null>(null);
+
     const login = useAuthStore((state) => state.login);
     const navigate = useNavigate();
 
@@ -58,20 +62,51 @@ const Login = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (validateForm()) {
-            // Simulamos autenticación
+        setApiError(null);
+
+        if (!validateForm()) {
+            return;
+        }
+
+        try {
+            setIsSubmitting(true);
+
+            const response = await fetch('http://localhost:8000/api/v1/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ email: formData.email, password: formData.password }),
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    setApiError('Credenciales inválidas');
+                } else {
+                    setApiError('Ocurrió un error al iniciar sesión. Intenta de nuevo.');
+                }
+                return;
+            }
+
+            const data = await response.json();
+
             const userData = {
-                id: '1',
-                name: 'Dr. Juan Pérez',
-                email: formData.email,
-                role: 'veterinario'
+                id: data.user_id,
+                name: data.name,
+                email: data.email,
+                role: data.role,
             };
 
             login(userData);
             navigate('/dashboard');
+        } catch (error) {
+            setApiError('No se pudo conectar con el servidor.');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -80,6 +115,7 @@ const Login = () => {
             <div className="max-w-md w-full mx-4">
                 <Card title="Iniciar Sesión" className="shadow-lg">
                     <form onSubmit={handleSubmit}>
+
                         <Input
                             label="Email"
                             type="email"
@@ -102,14 +138,31 @@ const Login = () => {
                             required
                         />
 
-                        <Button
-                            type="submit"
-                            variant="primary"
-                            size="lg"
-                            className="w-full"
-                        >
-                            Iniciar Sesión
-                        </Button>
+                        {apiError && (
+                            <p className="text-red-500 text-sm mb-4">{apiError}</p>
+                        )}
+
+                        <div className="space-y-3">
+                            <Button
+                                type="submit"
+                                variant="primary"
+                                size="lg"
+                                className="w-full"
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+                            </Button>
+
+                            <Button
+                                type="button"
+                                variant="outline"
+                                className="w-full"
+                                onClick={() => navigate('/')}
+                            >
+                                Volver a la página principal
+                            </Button>
+                        </div>
+
                     </form>
                 </Card>
             </div>

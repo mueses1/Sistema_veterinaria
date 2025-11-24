@@ -6,26 +6,27 @@
 
 import { usePacientesStore } from '../store/pacientesStore';
 import { useCitasStore } from '../store/citasStore';
+import { getItem } from './LocalStorage';
+import { Paciente, Cita } from '../types/Index';
 
 export const migrateOldData = () => {
   // Verificar si ya existe el formato de Zustand (evitar migración duplicada)
-  const pacientesStorage = localStorage.getItem('pacientes-storage');
-  const citasStorage = localStorage.getItem('citas-storage');
+  const pacientesStorage = getItem<Paciente[]>('pacientes-storage');
+  const citasStorage = getItem<Cita[]>('citas-storage');
   
   // Solo migrar si no existe el formato de Zustand
   if (!pacientesStorage) {
     // Migrar pacientes
-    const oldPacientes = localStorage.getItem('pacientes');
+    const oldPacientes = getItem<Paciente[]>('pacientes');
     if (oldPacientes) {
       try {
-        const pacientes = JSON.parse(oldPacientes);
-        if (Array.isArray(pacientes) && pacientes.length > 0) {
+        if (Array.isArray(oldPacientes) && oldPacientes.length > 0) {
           const pacientesStore = usePacientesStore.getState();
           // Solo migrar si el store está vacío
           if (pacientesStore.pacientes.length === 0) {
             // Actualizar directamente el estado
-            usePacientesStore.setState({ pacientes });
-            console.log('Pacientes migrados:', pacientes.length);
+            usePacientesStore.setState({ pacientes: oldPacientes });
+            console.log('Pacientes migrados:', oldPacientes.length);
           }
         }
       } catch (error) {
@@ -36,17 +37,16 @@ export const migrateOldData = () => {
 
   if (!citasStorage) {
     // Migrar citas
-    const oldCitas = localStorage.getItem('citas');
+    const oldCitas = getItem<Cita[]>('citas');
     if (oldCitas) {
       try {
-        const citas = JSON.parse(oldCitas);
-        if (Array.isArray(citas) && citas.length > 0) {
+        if (Array.isArray(oldCitas) && oldCitas.length > 0) {
           const citasStore = useCitasStore.getState();
           // Solo migrar si el store está vacío
           if (citasStore.citas.length === 0) {
             // Actualizar directamente el estado
-            useCitasStore.setState({ citas });
-            console.log('Citas migradas:', citas.length);
+            useCitasStore.setState({ citas: oldCitas });
+            console.log('Citas migradas:', oldCitas.length);
           }
         }
       } catch (error) {

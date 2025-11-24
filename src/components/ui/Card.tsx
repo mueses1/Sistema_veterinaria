@@ -14,9 +14,9 @@ const Card = ({
     padding = 'p-6'
 }: CardProps) => {
     return (
-        <div className={`bg-white shadow-md rounded-xl ${padding} ${className}`}>
+        <div className={`bg-white dark:bg-gray-800 dark:text-gray-100 shadow-md rounded-xl ${padding} ${className}`}>
             {title && (
-                <h3 className="text-xl font-bold text-gray-700 mb-4">{title}</h3>
+                <h3 className="text-xl font-bold text-gray-700 dark:text-gray-100 mb-4">{title}</h3>
             )}
             {children}
         </div>

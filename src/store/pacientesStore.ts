@@ -1,44 +1,84 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import { Paciente } from '../types/Index.ts';
 
+// Definimos el tipo de estado que manejará el store de pacientes
 interface PacientesState {
-  pacientes: Paciente[];
-  addPaciente: (paciente: Paciente) => void;
-  updatePaciente: (id: string, paciente: Paciente) => void;
-  deletePaciente: (id: string) => void;
-  getPacienteById: (id: string) => Paciente | undefined;
+  pacientes: Paciente[]; // Lista de pacientes
+  loadPacientes: () => Promise<void>; // Cargar pacientes desde la API
+  addPaciente: (paciente: Paciente) => Promise<void>; // Agregar un paciente
+  updatePaciente: (id: string, paciente: Paciente) => Promise<void>; // Actualizar paciente existente
+  deletePaciente: (id: string) => Promise<void>; // Eliminar paciente
+  getPacienteById: (id: string) => Paciente | undefined; // Obtener paciente por ID
 }
 
-export const usePacientesStore = create<PacientesState>()(
-  persist(
-    (set, get) => ({
-      pacientes: [],
-      addPaciente: (paciente: Paciente) => {
-        set((state) => ({
-          pacientes: [...state.pacientes, paciente],
-        }));
-      },
-      updatePaciente: (id: string, pacienteActualizado: Paciente) => {
-        set((state) => ({
-          pacientes: state.pacientes.map((paciente) =>
-            paciente.id === id ? pacienteActualizado : paciente
-          ),
-        }));
-      },
-      deletePaciente: (id: string) => {
-        set((state) => ({
-          pacientes: state.pacientes.filter((paciente) => paciente.id !== id),
-        }));
-      },
-      getPacienteById: (id: string) => {
-        return get().pacientes.find((paciente) => paciente.id === id);
-      },
-    }),
-    {
-      name: 'pacientes-storage', // nombre de la clave en localStorage
-      partialize: (state) => ({ pacientes: state.pacientes }), // Solo persistir el estado, no las funciones
-    }
-  )
-);
+const API_BASE_URL = 'http://localhost:8000/api/v1';
 
+// Creamos el estado global con Zustand consumiendo la API FastAPI
+export const usePacientesStore = create<PacientesState>()((set, get) => ({
+  // Estado inicial
+  pacientes: [],
+
+  // Cargar pacientes desde el backend
+  loadPacientes: async () => {
+    const response = await fetch(`${API_BASE_URL}/patients/`);
+    if (!response.ok) return;
+    const data: Paciente[] = await response.json();
+    set({ pacientes: data });
+  },
+
+  // Agregar un nuevo paciente (se crea en la API y luego se actualiza el estado)
+  addPaciente: async (paciente: Paciente) => {
+    const response = await fetch(`${API_BASE_URL}/patients/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(paciente),
+    });
+
+    if (!response.ok) return;
+
+    const created: Paciente = await response.json();
+    set((state) => ({
+      pacientes: [...state.pacientes, created],
+    }));
+  },
+
+  // Actualizar un paciente existente en la API y en el estado
+  updatePaciente: async (id: string, pacienteActualizado: Paciente) => {
+    const response = await fetch(`${API_BASE_URL}/patients/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(pacienteActualizado),
+    });
+
+    if (!response.ok) return;
+
+    const updated: Paciente = await response.json();
+    set((state) => ({
+      pacientes: state.pacientes.map((paciente) =>
+        paciente.id === id ? updated : paciente
+      ),
+    }));
+  },
+
+  // Eliminar un paciente en la API y luego en el estado
+  deletePaciente: async (id: string) => {
+    const response = await fetch(`${API_BASE_URL}/patients/${id}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) return;
+
+    set((state) => ({
+      pacientes: state.pacientes.filter((paciente) => paciente.id !== id),
+    }));
+  },
+
+  // Buscar y devolver un paciente por su ID (o undefined si no existe)
+  getPacienteById: (id: string) => {
+    return get().pacientes.find((paciente) => paciente.id === id);
+  },
+}));

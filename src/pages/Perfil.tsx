@@ -121,15 +121,16 @@ const Perfil = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 pt-24">
+      
       <Navbar />
       
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-800">Mi Perfil</h1>
-            <p className="text-gray-600 mt-2">
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Mi Perfil</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">
               Gestiona tu información personal y profesional
             </p>
           </div>
@@ -282,10 +283,14 @@ const Perfil = () => {
                     />
 
                     <div className="md:col-span-2">
-                      <label className="block text-gray-700 uppercase font-bold mb-2">
+                      <label
+                        htmlFor="biografia"
+                        className="block text-gray-700 uppercase font-bold mb-2"
+                      >
                         Biografía Profesional
                       </label>
                       <textarea
+                        id="biografia"
                         name="biografia"
                         value={formData.biografia}
                         onChange={handleChange}

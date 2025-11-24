@@ -11,6 +11,7 @@ interface InputProps {
     className?: string;
     name?: string;
     disabled?: boolean;
+    id?: string;
 }
 
 const Input = ({
@@ -23,18 +24,24 @@ const Input = ({
     required = false,
     className = '',
     name,
-    disabled = false
+    disabled = false,
+    id,
 }: InputProps) => {
+    const inputId = id || name;
     return (
         <div className="mb-5">
             {label && (
-                <label className="block text-gray-700 uppercase font-bold mb-2">
+                <label
+                    className="block text-gray-700 uppercase font-bold mb-2"
+                    htmlFor={inputId}
+                >
                     {label}
                     {required && <span className="text-red-500 ml-1">*</span>}
                 </label>
             )}
             <input
                 type={type}
+                id={inputId}
                 name={name}
                 placeholder={placeholder}
                 value={value}
