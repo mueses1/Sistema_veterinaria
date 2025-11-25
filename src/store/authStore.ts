@@ -6,14 +6,14 @@ interface User {
   id: string;
   name: string;
   email: string;
-  role?: string;         // Rol general del usuario (opcional)
+  role: string;          // "admin" o "customer"
+  token: string;         // access_token devuelto por el backend
   nombre?: string;       // Nombre completo (opcional)
   telefono?: string;     // Teléfono (opcional)
   especialidad?: string; // Especialidad (si aplica) (opcional)
   licencia?: string;     // Licencia profesional (opcional)
   direccion?: string;    // Dirección (opcional)
   biografia?: string;    // Biografía o descripción (opcional)
-  rol?: string;          // Otro campo de rol (opcional) *repetido*
 }
 
 // Estado de autenticación que el store manejará

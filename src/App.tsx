@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import DashboardCliente from './pages/DashboardCliente';
 import Pacientes from './pages/Pacientes';
 import Citas from './pages/Citas';
 import Perfil from './pages/Perfil';
@@ -13,6 +14,7 @@ import CatalogoProductos from './pages/CatalogoProductos';
 import SobreNosotros from './pages/SobreNosotros';
 import Servicios from './pages/Servicios';
 import Contacto from './pages/Contacto';
+import Carrito from './pages/Carrito';
 import { applyThemeClass, loadStoredTheme } from './utils/theme';
 
 const API_BASE_URL = 'http://localhost:8000/api/v1';
@@ -55,15 +57,24 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/catalogo-productos" element={<CatalogoProductos />} />
+        <Route path="/carrito" element={<Carrito />} />
         <Route path="/sobre-nosotros" element={<SobreNosotros />} />
         <Route path="/servicios" element={<Servicios />} />
         <Route path="/contacto" element={<Contacto />} />
         
         {/* Rutas protegidas */}
         <Route
-          path="/dashboard"
+          path="/cliente-dashboard"
           element={
             <ProtectedRoute>
+              <DashboardCliente />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute requireAdmin>
               <Dashboard />
             </ProtectedRoute>
           }
@@ -71,7 +82,7 @@ function App() {
         <Route
           path="/pacientes"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requireAdmin>
               <Pacientes />
             </ProtectedRoute>
           }
@@ -79,7 +90,7 @@ function App() {
         <Route
           path="/citas"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requireAdmin>
               <Citas />
             </ProtectedRoute>
           }
@@ -87,7 +98,7 @@ function App() {
         <Route
           path="/productos"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requireAdmin>
               <Productos />
             </ProtectedRoute>
           }

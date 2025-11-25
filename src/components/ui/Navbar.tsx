@@ -40,19 +40,55 @@ const Navbar = () => {
 
   const isActive = (path: string): boolean => location.pathname === path;
 
-  const isPublicLanding = !isAuthenticated &&
-    (
-      location.pathname === '/' ||
-      location.pathname === '/catalogo-productos' ||
-      location.pathname === '/sobre-nosotros' ||
-      location.pathname === '/servicios' ||
-      location.pathname === '/contacto'
-    );
+  const isAdmin = isAuthenticated && user?.role === 'admin';
+
+  // Para clientes (customer) siempre usamos el navbar público (landing-style),
+  // los menús de administración solo se muestran a administradores.
+  const showPublicNav = !isAdmin;
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
+
+  const handlePublicInicioClick = () => {
+    navigate('/');
+  };
+
+  const handlePublicServiciosClick = () => {
+    navigate('/servicios');
+  };
+
+  const handlePublicSobreNosotrosClick = () => {
+    navigate('/sobre-nosotros');
+  };
+
+  const handlePublicContactoClick = () => {
+    navigate('/contacto');
+  };
+
+  const handlePublicCarritoClick = () => {
+    navigate('/carrito');
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 40);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadSolicitudes();
+    }
+  }, [isAuthenticated, loadSolicitudes]);
 
   const navigationItems: NavigationItem[] = [
     {
@@ -81,45 +117,6 @@ const Navbar = () => {
     }
   ];
 
-  const handlePublicInicioClick = () => {
-    navigate('/');
-  };
-
-  const handlePublicProductosClick = () => {
-    navigate('/catalogo-productos');
-  };
-
-  const handlePublicSobreNosotrosClick = () => {
-    navigate('/sobre-nosotros');
-  };
-
-  const handlePublicServiciosClick = () => {
-    navigate('/servicios');
-  };
-
-  const handlePublicContactoClick = () => {
-    navigate('/contacto');
-  };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    handleScroll();
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      loadSolicitudes();
-    }
-  }, [isAuthenticated, loadSolicitudes]);
-
   const navbarClasses = `fixed top-0 left-0 right-0 z-50 shadow-xl border-b border-blue-500 transition-colors duration-300 ${
     isScrolled
       ? 'bg-white/90 text-gray-900 dark:bg-blue-900/80 dark:text-white backdrop-blur-md'
@@ -132,7 +129,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center py-3">
           {/* Logo y marca */}
           <Link
-            to={isPublicLanding ? '/' : '/dashboard'}
+            to={!isAuthenticated ? '/' : isAdmin ? '/dashboard' : '/cliente-dashboard'}
             className="flex items-center space-x-3 text-blue-700 hover:text-blue-600 dark:text-white dark:hover:text-blue-100 transition-colors duration-200"
           >
             <div className="bg-blue-100 dark:bg-white/20 p-2 rounded-lg backdrop-blur-sm">
@@ -150,7 +147,7 @@ const Navbar = () => {
           </Link>
 
           {/* Navegación desktop */}
-          {isPublicLanding ? (
+          {showPublicNav ? (
             <div className="hidden md:flex items-center space-x-1 text-sm">
               <button
                 onClick={handlePublicInicioClick}
@@ -175,17 +172,6 @@ const Navbar = () => {
                 Servicios
               </button>
               <button
-                onClick={handlePublicProductosClick}
-                className={`px-3 py-2 rounded-lg transition-colors duration-200 
-                  ${location.pathname === '/catalogo-productos'
-                    ? 'bg-blue-600 text-white shadow-md dark:bg-white/20'
-                    : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800 dark:text-blue-100 dark:hover:bg-white/10 dark:hover:text-white'
-                  }
-                `}
-              >
-                Productos
-              </button>
-              <button
                 onClick={handlePublicSobreNosotrosClick}
                 className={`px-3 py-2 rounded-lg transition-colors duration-200 
                   ${location.pathname === '/sobre-nosotros'
@@ -207,9 +193,20 @@ const Navbar = () => {
               >
                 Contáctanos
               </button>
+              <button
+                onClick={handlePublicCarritoClick}
+                className={`px-3 py-2 rounded-lg transition-colors duration-200 
+                  ${location.pathname === '/carrito'
+                    ? 'bg-blue-600 text-white shadow-md dark:bg-white/20'
+                    : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800 dark:text-blue-100 dark:hover:bg-white/10 dark:hover:text-white'
+                  }
+                `}
+              >
+                Carrito
+              </button>
             </div>
           ) : (
-            !isPublicLanding && (
+            !showPublicNav && (
               <div className="hidden md:flex items-center space-x-1">
                 {navigationItems.map((item) => (
                   <Link
@@ -233,15 +230,51 @@ const Navbar = () => {
             )
           )}
 
-          {/* Usuario y acciones / Login público */}
+          {/* Usuario y acciones / Login público vs autenticado */}
           <div className="flex items-center space-x-4">
-            {isPublicLanding ? (
-              <button
-                onClick={() => navigate('/login')}
-                className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white font-medium shadow-sm transition-colors duration-200"
-              >
-                Iniciar sesión
-              </button>
+            {showPublicNav ? (
+              !isAuthenticated ? (
+                <button
+                  onClick={() => navigate('/login')}
+                  className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white font-medium shadow-sm transition-colors duration-200"
+                >
+                  Iniciar sesión
+                </button>
+              ) : (
+                // Cliente autenticado: solo menú de usuario simple, sin notificaciones ni navegación de administración
+                <div className="relative">
+                  <button
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="flex items-center space-x-3 bg-blue-50 hover:bg-blue-100 text-gray-800 dark:bg-white/10 dark:hover:bg-white/20 px-3 py-2 rounded-lg transition-all duration-200 backdrop-blur-sm"
+                  >
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                      {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                    </div>
+                    <div className="hidden sm:block text-left">
+                      <p className="text-gray-900 dark:text-white font-medium text-sm">{user?.name}</p>
+                      <p className="text-gray-500 dark:text-blue-100 text-xs">{user?.role}</p>
+                    </div>
+                    <span className={`text-gray-700 dark:text-white transition-transform duration-200 ${showUserMenu ? 'rotate-180' : ''}`}>
+                      ▼
+                    </span>
+                  </button>
+
+                  {showUserMenu && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50">
+                      <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-800 font-semibold">
+                        {user?.name}
+                      </div>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 flex items-center space-x-2"
+                      >
+                        <span>🚪</span>
+                        <span>Cerrar Sesión</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )
             ) : (
               <>
                 {/* Campanita de notificaciones (solo autenticado) */}
@@ -397,7 +430,7 @@ const Navbar = () => {
         {isMenuOpen && (
           <div className="md:hidden border-t border-blue-500 py-4">
             <div className="space-y-2">
-              {isPublicLanding ? (
+              {showPublicNav ? (
                 <>
                   <button
                     onClick={() => { handlePublicInicioClick(); setIsMenuOpen(false); }}
@@ -414,13 +447,6 @@ const Navbar = () => {
                     <span>Servicios</span>
                   </button>
                   <button
-                    onClick={() => { handlePublicProductosClick(); setIsMenuOpen(false); }}
-                    className="w-full text-left px-4 py-3 rounded-lg text-blue-100 hover:bg-white hover:bg-opacity-10 hover:text-white flex items-center space-x-3"
-                  >
-                    <span className="text-xl">🛒</span>
-                    <span>Productos</span>
-                  </button>
-                  <button
                     onClick={() => { handlePublicSobreNosotrosClick(); setIsMenuOpen(false); }}
                     className="w-full text-left px-4 py-3 rounded-lg text-blue-100 hover:bg-white hover:bg-opacity-10 hover:text-white flex items-center space-x-3"
                   >
@@ -433,6 +459,13 @@ const Navbar = () => {
                   >
                     <span className="text-xl">📞</span>
                     <span>Contáctanos</span>
+                  </button>
+                  <button
+                    onClick={() => { handlePublicCarritoClick(); setIsMenuOpen(false); }}
+                    className="w-full text-left px-4 py-3 rounded-lg text-blue-100 hover:bg-white hover:bg-opacity-10 hover:text-white flex items-center space-x-3"
+                  >
+                    <span className="text-xl">🛒</span>
+                    <span>Carrito</span>
                   </button>
                 </>
               ) : (

@@ -5,6 +5,7 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Modal from '../components/ui/Modal';
+import { useAuthStore } from '../store/authStore';
 
 const API_BASE_URL = 'http://localhost:8000/api/v1';
 const API_BASE_ORIGIN = 'http://localhost:8000';
@@ -32,6 +33,8 @@ const Productos = () => {
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+
+  const user = useAuthStore((state) => state.user);
 
   const formatCOP = (value: number) =>
     `COP ${new Intl.NumberFormat('es-CO', {
@@ -90,7 +93,10 @@ const Productos = () => {
         // Modo edición: actualizar producto existente (sin cambiar imagen aquí)
         const res = await fetch(`${API_BASE_URL}/products/${editingProduct.id}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+          },
           body: JSON.stringify({
             name,
             price: Number(price),
@@ -127,6 +133,9 @@ const Productos = () => {
 
         const res = await fetch(`${API_BASE_URL}/products/with-image`, {
           method: 'POST',
+          headers: {
+            ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+          },
           body: formData,
         });
 
@@ -177,6 +186,9 @@ const Productos = () => {
     try {
       const res = await fetch(`${API_BASE_URL}/products/${id}`, {
         method: 'DELETE',
+        headers: {
+          ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+        },
       });
       if (!res.ok) {
         console.error('Error eliminando producto');

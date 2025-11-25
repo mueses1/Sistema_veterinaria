@@ -99,10 +99,16 @@ const Login = () => {
                 name: data.name,
                 email: data.email,
                 role: data.role,
+                token: data.access_token,
             };
 
             login(userData);
-            navigate('/dashboard');
+
+            if (userData.role === 'admin') {
+                navigate('/dashboard');
+            } else {
+                navigate('/cliente-dashboard');
+            }
         } catch (error) {
             setApiError('No se pudo conectar con el servidor.');
         } finally {
