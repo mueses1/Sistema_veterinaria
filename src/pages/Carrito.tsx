@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Navbar from '../components/ui/Navbar';
 import Button from '../components/ui/Button';
 import { useAuthStore } from '../store/authStore';
@@ -24,6 +24,7 @@ const Carrito = () => {
   const user = useAuthStore((state) => state.user);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [cart, setCart] = useState<CartResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -50,6 +51,17 @@ const Carrito = () => {
     }
     fetchCart();
   }, [isAuthenticated, user]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !user) return;
+
+    const state = location.state as { autoCheckout?: boolean } | null;
+    if (state?.autoCheckout) {
+      // Limpiamos el estado para evitar múltiples ejecuciones si el usuario vuelve atrás
+      window.history.replaceState({}, document.title, window.location.pathname);
+      handleCheckout();
+    }
+  }, [isAuthenticated, user, location.state]);
 
   const total = cart?.items?.reduce((acc, item) => acc + item.price * item.quantity, 0) ?? 0;
 
@@ -331,7 +343,43 @@ const Carrito = () => {
       });
 
       if (isCash && result.isConfirmed) {
-        window.print();
+        const printWindow = window.open('', '_blank', 'width=800,height=600');
+        if (printWindow) {
+          printWindow.document.open();
+          printWindow.document.write(`
+            <!DOCTYPE html>
+            <html lang="es">
+              <head>
+                <meta charSet="utf-8" />
+                <title>Recibo de pago</title>
+                <style>
+                  body {
+                    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                    padding: 16px;
+                    color: #0f172a;
+                  }
+                  table {
+                    width: 100%;
+                    border-collapse: collapse;
+                  }
+                  th, td {
+                    border-bottom: 1px solid #e5e7eb;
+                  }
+                </style>
+              </head>
+              <body>
+                <h1 style="font-size:18px; margin-bottom:12px;">Recibo de pago en efectivo</h1>
+                ${reciboHtml}
+                <script>
+                  window.onload = function() {
+                    window.print();
+                  };
+                <\/script>
+              </body>
+            </html>
+          `);
+          printWindow.document.close();
+        }
       }
 
       await fetchCart();

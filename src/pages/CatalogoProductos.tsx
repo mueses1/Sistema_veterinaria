@@ -23,6 +23,7 @@ const CatalogoProductos = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('todas');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
+  const [actionType, setActionType] = useState<'cart' | 'buy' | null>(null);
   const [feedback, setFeedback] = useState<{
     type: 'success' | 'error';
     message: string;
@@ -65,13 +66,14 @@ const CatalogoProductos = () => {
     return byCategory && bySearch;
   });
 
-  const openQuantityModal = (prod: Product) => {
+  const openQuantityModal = (prod: Product, type: 'cart' | 'buy') => {
     if (!isAuthenticated || !user) {
       navigate('/login');
       return;
     }
     setSelectedProduct(prod);
     setQuantity(1);
+    setActionType(type);
   };
 
   const handleAddToCart = async () => {
@@ -121,11 +123,69 @@ const CatalogoProductos = () => {
 
       setFeedback({ type: 'success', message: 'Producto añadido al carrito.' });
       setSelectedProduct(null);
+      setActionType(null);
     } catch (error) {
       console.error('Error agregando al carrito', error);
       setFeedback({
         type: 'error',
         message: 'Ocurrió un error al agregar el producto al carrito.',
+      });
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (!isAuthenticated || !user || !selectedProduct) {
+      navigate('/login');
+      return;
+    }
+
+    if (Number.isNaN(quantity) || quantity <= 0) {
+      setFeedback({ type: 'error', message: 'Ingresa una cantidad válida mayor a 0.' });
+      return;
+    }
+
+    if (quantity > selectedProduct.stock) {
+      setFeedback({
+        type: 'error',
+        message: `No puedes agregar más de ${selectedProduct.stock} unidades disponibles en stock.`,
+      });
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/cart/${user.id}/items`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          product_id: selectedProduct.id,
+          name: selectedProduct.name,
+          price: selectedProduct.price,
+          quantity,
+          image_url: selectedProduct.image_url
+            ? `${API_BASE_ORIGIN}${selectedProduct.image_url}`
+            : undefined,
+        }),
+      });
+
+      if (!res.ok) {
+        console.error('Error agregando al carrito para compra directa');
+        setFeedback({
+          type: 'error',
+          message: 'Ocurrió un error al preparar la compra.',
+        });
+        return;
+      }
+
+      setSelectedProduct(null);
+      setActionType(null);
+      navigate('/carrito', { state: { autoCheckout: true } });
+    } catch (error) {
+      console.error('Error en compra directa', error);
+      setFeedback({
+        type: 'error',
+        message: 'Ocurrió un error al preparar la compra.',
       });
     }
   };
@@ -209,14 +269,32 @@ const CatalogoProductos = () => {
                         Stock: {prod.stock}
                       </span>
                     </div>
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      className="w-full mt-1"
-                      onClick={() => openQuantityModal(prod)}
-                    >
-                      Agregar al carrito
-                    </Button>
+                    <div className="flex gap-2 mt-1">
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => openQuantityModal(prod, 'buy')}
+                      >
+                        Comprar
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-10 flex items-center justify-center"
+                        onClick={() => openQuantityModal(prod, 'cart')}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="w-5 h-5"
+                        >
+                          <path d="M7 4h-.75a.75.75 0 0 0 0 1.5H7l1.106 6.633A2.25 2.25 0 0 0 10.33 14h6.44a2.25 2.25 0 0 0 2.22-1.867l.75-4.5A.75.75 0 0 0 19 6h-9.03L9.53 4.22A1.5 1.5 0 0 0 8.061 3.5H5.25a.75.75 0 0 0 0 1.5h2.02L7 4Zm3.33 9a.75.75 0 0 1-.74-.633L8.27 7.5H18.1l-.63 3.78a.75.75 0 0 1-.74.72h-6.4Z" />
+                          <path d="M9 18.75A1.25 1.25 0 1 1 7.75 17.5 1.25 1.25 0 0 1 9 18.75Zm8.5 1.25A1.25 1.25 0 1 0 16.25 18.75 1.25 1.25 0 0 0 17.5 20Z" />
+                        </svg>
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -257,7 +335,7 @@ const CatalogoProductos = () => {
         <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 backdrop-blur-sm">
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6 border border-gray-200 dark:border-gray-700">
             <h2 className="text-xl font-black mb-2 text-gray-900 dark:text-gray-100">
-              Agregar al carrito
+              {actionType === 'buy' ? 'Comprar producto' : 'Agregar al carrito'}
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
               {selectedProduct.name}
@@ -285,14 +363,17 @@ const CatalogoProductos = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setSelectedProduct(null)}
+                onClick={() => {
+                  setSelectedProduct(null);
+                  setActionType(null);
+                }}
               >
                 Cancelar
               </Button>
               <Button
                 variant="primary"
                 size="sm"
-                onClick={handleAddToCart}
+                onClick={actionType === 'buy' ? handleBuyNow : handleAddToCart}
               >
                 Confirmar
               </Button>

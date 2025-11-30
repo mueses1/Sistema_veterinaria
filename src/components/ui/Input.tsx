@@ -47,7 +47,7 @@ const Input = ({
                 value={value}
                 onChange={onChange}
                 disabled={disabled}
-                className={`border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${error ? 'border-red-500' : 'border-gray-300'
+                className={`border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 ${error ? 'border-red-500' : 'border-gray-300'
                     } ${disabled ? 'bg-gray-50 cursor-not-allowed' : ''} ${className}`}
             />
             {error && (
