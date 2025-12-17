@@ -62,11 +62,11 @@ const Perfil = () => {
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
-    
+
     if (!formData.nombre.trim()) {
       newErrors.nombre = 'El nombre es requerido';
     }
-    
+
     if (!formData.email.trim()) {
       newErrors.email = 'El email es requerido';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -83,7 +83,7 @@ const Perfil = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
       // Actualizar el usuario en el contexto
       const updatedUser = {
@@ -92,10 +92,10 @@ const Perfil = () => {
         id: user?.id || '',
         name: formData.nombre
       };
-      
+
       login(updatedUser);
       setIsEditing(false);
-      
+
       Swal.fire({
         title: 'Perfil actualizado',
         text: 'Tu información se ha guardado correctamente',
@@ -122,9 +122,9 @@ const Perfil = () => {
 
   return (
     <div className="min-h-screen bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 pt-24">
-      
+
       <Navbar />
-      
+
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
@@ -144,7 +144,7 @@ const Perfil = () => {
                     {user?.nombre?.charAt(0)?.toUpperCase() || 'U'}
                   </div>
                   <h3 className="text-xl font-bold text-gray-800">{user?.nombre}</h3>
-                  <p className="text-gray-600">{user?.rol || 'Veterinario'}</p>
+                  <p className="text-gray-600">{user?.role || 'Veterinario'}</p>
                   <p className="text-sm text-gray-500 mt-1">{user?.email}</p>
                 </div>
 
@@ -296,9 +296,8 @@ const Perfil = () => {
                         onChange={handleChange}
                         rows={4}
                         placeholder="Cuéntanos sobre tu experiencia, formación y áreas de interés..."
-                        className={`border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                          !isEditing ? 'bg-gray-50 border-gray-200' : 'border-gray-300'
-                        }`}
+                        className={`border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${!isEditing ? 'bg-gray-50 border-gray-200' : 'border-gray-300'
+                          }`}
                         disabled={!isEditing}
                       />
                     </div>

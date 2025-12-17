@@ -2,10 +2,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { 
-  Heart, Calendar, Package, ShieldCheck, 
-  Mail, Phone, MapPin, Clock, PawPrint, Stethoscope
-} from 'lucide-react';
 
 // TU NAVBAR ORIGINAL (importas el tuyo)
 import Navbar from '../components/ui/Navbar';  // ← Este es el que ya tienes
@@ -114,12 +110,13 @@ const Landing = () => {
               </motion.h1>
 
               <motion.p 
+                
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.9 }}
                 className="text-xl text-cyan-50 mb-10 max-w-2xl leading-relaxed"
               >
-                Gestiona pacientes, citas, inventario y comunicación con un sistema moderno, seguro y diseñado por y para veterinarios.
+                Seguro y diseñado por y para veterinarios.
               </motion.p>
 
               <motion.div 
