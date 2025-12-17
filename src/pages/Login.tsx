@@ -144,6 +144,16 @@ const Login = () => {
                             required
                         />
 
+                        <div className="flex justify-end -mt-2 mb-4">
+                            <button
+                                type="button"
+                                onClick={() => navigate('/forgot-password')}
+                                className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                            >
+                                ¿Olvidaste tu contraseña?
+                            </button>
+                        </div>
+
                         {apiError && (
                             <p className="text-red-500 text-sm mb-4">{apiError}</p>
                         )}

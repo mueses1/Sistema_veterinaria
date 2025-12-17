@@ -15,6 +15,8 @@ import SobreNosotros from './pages/SobreNosotros';
 import Servicios from './pages/Servicios';
 import Contacto from './pages/Contacto';
 import Carrito from './pages/Carrito';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import { applyThemeClass, loadStoredTheme } from './utils/theme';
 
 const API_BASE_URL = 'http://localhost:8000/api/v1';
@@ -55,13 +57,17 @@ function App() {
       <Routes>
         {/* Rutas públicas */}
         <Route path="/" element={<Landing />} />
+
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/catalogo-productos" element={<CatalogoProductos />} />
         <Route path="/carrito" element={<Carrito />} />
+
         <Route path="/sobre-nosotros" element={<SobreNosotros />} />
         <Route path="/servicios" element={<Servicios />} />
         <Route path="/contacto" element={<Contacto />} />
-        
+
         {/* Rutas protegidas */}
         <Route
           path="/cliente-dashboard"
